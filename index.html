@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Guess The Flag</title>
+        <link rel="stylesheet" href="./css/style.css">
+    </head>
+    <body>
+        <div class="area" >
+            <ul class="circles">
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+            </ul>
+        </div>
+        <div class="notification-container" id="notification-container"></div>
+        <div class="holder">
+            <div id="flags" class="hidden"></div>
+            <div id="game" class="hidden">
+                <div class="time game-title">10:00:00</div>
+            </div>
+            <div id="menu">
+                <h1 class="game-title">GUESS THE FLAG!</h1>
+                <ul class="menu-options">
+                    <li><button onclick="beginGamePrompt()">START GAME</button></li>
+                    <li><button onclick="openListPrompt()">SEE LIST OF COUNTRIES</button></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer">
+            <p>Lucas Vieira da Silva</p>
+        </div>    
+        <script src="./js/notification.js"></script>
+        <script src="./js/game.js"></script>
+    </body>
+</html>
