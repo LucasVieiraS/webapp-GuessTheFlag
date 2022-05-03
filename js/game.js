@@ -34,7 +34,11 @@ function setFavicon(favImg){
 }
 
 function getCountry(id){
-    return savedFlags[Math.floor(Math.random()*savedFlags.length)];
+    var current = savedFlags[Math.floor(Math.random()*savedFlags.length)]
+    while (current !== null && current[0].includes("us-")){
+        current = savedFlags[Math.floor(Math.random()*savedFlags.length)]
+    }
+    return current;
 }
 
 function getRandomInitials(){
@@ -42,7 +46,12 @@ function getRandomInitials(){
 }
 
 function getRandomCountry(){
-    return savedFlags[Math.floor(Math.random()*savedFlags.length)][1];
+    var current = savedFlags[Math.floor(Math.random()*savedFlags.length)]
+    while (current !== null && current[0].includes("us-")){
+        current = savedFlags[Math.floor(Math.random()*savedFlags.length)]
+    }
+    return current[1];
+    //return savedFlags[Math.floor(Math.random()*savedFlags.length)][1];
 }
 
 // GAME
@@ -51,11 +60,11 @@ function endGame() {
     gameDiv.setAttribute("class", "hidden")
 }
 
-function generateRandom(maxLimit = 3){
-    let rand = Math.floor(Math.random() * maxLimit);
-    if (rand <= 1){
-        rand = 1;
-    }
+function generateRandom(min = 0, max = 100) {
+    let difference = max - min;
+    let rand = Math.random();
+    rand = Math.floor( rand * difference);
+    rand = rand + min;
     return rand;
 }
 
@@ -72,7 +81,7 @@ function lostGame(countryName){
 }
 
 function createGame(){
-    var optionId = generateRandom(3)
+    var optionId = generateRandom(1, 4)
     var country = getCountry();
     function checkAnswer(e){
         console.log(e.target.value, optionId)
@@ -155,9 +164,11 @@ function clearMenu() {
 // FRONT-END CORE
 function returnToMenu(){
     if (listOpen == true){
+        listOpen = false;
         closeList();
     }
     if (gameOpen == true){
+        gameOpen = false;
         endGame();
     }
     menuDiv.removeAttribute("class")
