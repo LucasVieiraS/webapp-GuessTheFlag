@@ -7,15 +7,38 @@ const CreateNotification = NotificationManager.prototype.createNotification
 
 const failMessage = "Failed to load flags, please try refreshing the page! :( \nError: ";
 
-var listOpen = false;
-var gameOpen = false;
-var savedFlags = null;
+let listOpen = false;
+let gameOpen = false;
+let savedFlags = null;
+
+let cooldownArray = [false, false, false];
+
+// COOLDOWN HANDLER
+function isCooldown(index) {
+  return cooldownArray[index];
+}
+
+function handleCooldown(index, bool, interval) {
+  bool = bool || true;
+  function setCooldown() {
+    if (cooldownArray.length <= index) {
+      cooldownArray[index] = bool
+    }
+  }
+  if (interval) {
+    setTimeout(() => {
+      setCooldown()
+    }, interval)
+  } else {
+    setCooldown()
+  }
+}
 
 // HTTP REQUESTS
 function getFlagsListXHR(toLoadMethod){
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.onload = function(){
-        var objectResult = JSON.parse(this.responseText); 
+        let objectResult = JSON.parse(this.responseText);
         savedFlags = Object.entries(objectResult);
         init();
     };
@@ -34,7 +57,7 @@ function setFavicon(favImg){
 }
 
 function getCountry(id){
-    var current = savedFlags[Math.floor(Math.random()*savedFlags.length)]
+   let current = savedFlags[Math.floor(Math.random()*savedFlags.length)]
     while (current !== null && current[0].includes("us-")){
         current = savedFlags[Math.floor(Math.random()*savedFlags.length)]
     }
@@ -46,12 +69,11 @@ function getRandomInitials(){
 }
 
 function getRandomCountry(){
-    var current = savedFlags[Math.floor(Math.random()*savedFlags.length)]
+    let current = savedFlags[Math.floor(Math.random()*savedFlags.length)]
     while (current !== null && current[0].includes("us-")){
         current = savedFlags[Math.floor(Math.random()*savedFlags.length)]
     }
     return current[1];
-    //return savedFlags[Math.floor(Math.random()*savedFlags.length)][1];
 }
 
 // GAME
@@ -81,8 +103,11 @@ function lostGame(countryName){
 }
 
 function createGame(){
-    var optionId = generateRandom(1, 4)
-    var country = getCountry();
+    if (isCooldown(0)) return
+    handleCooldown(0, true);
+    gameDiv.removeAttribute("class")
+    let optionId = generateRandom(1, 4)
+    let country = getCountry();
     function checkAnswer(e){
         console.log(e.target.value, optionId)
         if (e.target.value == optionId) {
@@ -91,28 +116,27 @@ function createGame(){
             return lostGame(country[1]);
         }
     }
-    gameDiv.removeAttribute("class")
     let gameInfo = document.createElement("div")
     gameInfo.setAttribute("class", "game-info")
     gameDiv.appendChild(gameInfo)
-    var gameTitle = document.createElement("p")
+    let gameTitle = document.createElement("p")
     gameTitle.setAttribute("class", "game-title")
     gameTitle.innerHTML = "Which flag is this?"
     gameInfo.appendChild(gameTitle)
-    var countryImage = document.createElement("img")
+    let countryImage = document.createElement("img")
     countryImage.setAttribute("id", "game-flag")
     countryImage.setAttribute("src", `https://flagcdn.com/256x192/${country[0]}.png`)
     gameDiv.appendChild(countryImage);
-    var gameOptions = document.createElement("div")
+    let gameOptions = document.createElement("div")
     gameOptions.setAttribute("id", "game-options")
     gameDiv.appendChild(gameOptions)
-    var ulOptions = document.createElement("ul")
+    let ulOptions = document.createElement("ul")
     gameOptions.appendChild(ulOptions)
     ulOptions.setAttribute("class", "options")
-    for (var i = 0; i < 3; i++){
-        var li = document.createElement("li")
+    for (let i = 0; i < 3; i++){
+        let li = document.createElement("li")
         ulOptions.appendChild(li)
-        var button = document.createElement("button")
+        let button = document.createElement("button")
         if (i + 1 == optionId) {
             button.innerHTML = country[1]
         } else {
@@ -122,6 +146,7 @@ function createGame(){
         button.setAttribute("value", i + 1)
         li.appendChild(button)
     }
+    handleCooldown(0, false);
 }
 
 // LIST
@@ -145,6 +170,8 @@ function createFlagContainer(img, longName){
 }
 
 function setupFlagList(){
+    if (isCooldown(1)) return
+    handleCooldown(1, true);
     clearMenu();
     flagsDiv.removeAttribute("class")
     document.body.style['overflow-y'] = 'visible';
@@ -154,6 +181,7 @@ function setupFlagList(){
             createFlagContainer(`https://flagcdn.com/84x63/${shortName}.png`, longName)
         }
     });
+    handleCooldown(1, false);
 }
 
 // MENU
